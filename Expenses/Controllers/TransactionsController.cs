@@ -10,14 +10,26 @@ namespace Expenses.Controllers
     [ApiController]
     public class TransactionsController(AppDbContext context) : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("All")]
         public IActionResult GetAll()
         {
             var allTransactions = context.Transactions.ToList();
             return Ok(allTransactions);
         }
-        
-        [HttpPost]
+
+        [HttpGet("Details/{id}")]
+        public IActionResult Get(int id)
+        {
+            var transactionDb = context.Transactions.FirstOrDefault(t => t.Id == id);
+            if( transactionDb == null)
+            {   
+                return NotFound();
+            }
+
+            return Ok(transactionDb);
+        }
+
+        [HttpPost("Create")]
         public IActionResult CreateTransaction([FromBody]PostTransactionDto payload)
         {
 
@@ -33,5 +45,40 @@ namespace Expenses.Controllers
             context.SaveChanges();
             return Ok();
         }
+
+        [HttpPut("Update/{id}")]
+        public IActionResult UpdateTransaction(int id, [FromBody]PutTransactionDto payload)
+        {
+            var transactionDb = context.Transactions.FirstOrDefault(n => n.Id == id);
+            if (transactionDb == null)
+            {
+                return NotFound();
+            }
+
+            transactionDb.Type = payload.Type;
+            transactionDb.Amount = payload.Amount;
+            transactionDb.Category = payload.Category;
+            transactionDb.UpdatedAt = DateTime.UtcNow;
+
+            context.Transactions.Update(transactionDb);
+            context.SaveChanges();
+
+            return Ok(transactionDb);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public IActionResult DeleteTransaction(int id)
+        {
+            var transactionDb = context.Transactions.FirstOrDefault(n => n.Id == id);
+            if (transactionDb == null)
+                return NotFound();
+
+            context.Transactions.Remove(transactionDb);
+            context.SaveChanges();
+
+            return Ok();
+
+        }
+
     }
 }
