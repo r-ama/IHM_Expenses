@@ -21,6 +21,15 @@ namespace Expenses
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(); 
 
+            
+
+            // Add services to the container
+            builder.Services.AddCors(opt => opt.AddPolicy("AllowAll",
+                opt => opt.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin())
+            );
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,6 +40,9 @@ namespace Expenses
                 app.UseSwaggerUI(); 
 
             }
+
+
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 

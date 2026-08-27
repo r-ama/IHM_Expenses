@@ -65,6 +65,7 @@ namespace Expenses.Data.Services
                 transactionDb.Amount = transaction.Amount;
                 transactionDb.Category = transaction.Category;
                 transactionDb.UpdatedAt = DateTime.UtcNow;
+                transactionDb.CreatedDate = DateTime.UtcNow;
 
                 context.Transactions.Update(transactionDb);
                 context.SaveChanges();
