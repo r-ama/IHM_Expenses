@@ -3,6 +3,7 @@ import { Transaction } from '../../models/transaction';
 import { TransactionService } from '../../services/transactionService';
 
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-transaction-list',
@@ -13,7 +14,9 @@ import { CommonModule } from '@angular/common';
 export class TransactionList implements OnInit{
   transactions: Transaction[] = [];
 
-  constructor(private transactionService: TransactionService, private cdr: ChangeDetectorRef){}
+  constructor(private transactionService: TransactionService, private cdr: ChangeDetectorRef,
+    private router: Router
+  ){}
 
   ngOnInit(): void {
     this.loadTransactions();
@@ -42,6 +45,32 @@ export class TransactionList implements OnInit{
 
   getNetBalance():number {
     return this.getTotalIncome() - this.getTotalExpanses();
+  }
+
+  editTransaction(transaction: Transaction){
+
+    if(transaction.id)
+    {
+      this.router.navigate(['/edit/',transaction.id]);
+    }
+  }
+
+  deleteTransaction(transaction: Transaction){
+    console.log ('id to be deleted : ', transaction.id)
+    if(transaction.id){
+      if(confirm("Are you sure you want to delete this transaction?")){
+        this.transactionService.delete(transaction.id).subscribe({
+          next: () => {
+            this.loadTransactions();
+          },
+          error: (error) => {
+            console.log('Error - ', error);
+          }
+        })
+      }
+
+    }
+
   }
  
 }

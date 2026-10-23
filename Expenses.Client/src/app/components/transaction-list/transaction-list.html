@@ -47,11 +47,24 @@
             </thead>
             <tbody>
                 <tr *ngFor="let transaction of transactions">
-                    <td>{{transaction.createdDate}}</td>
+                    <td>{{transaction.createdDate | date}}</td>
                     <td>{{transaction.type}}</td>
                     <td [ngClass]="transaction.type === 'Income' ? 'text-success' :'text-danger' ">{{transaction.category}}</td>
                     <td [ngClass]="transaction.type === 'Income' ? 'text-success' :'text-danger' ">{{transaction.amount | currency}}</td>
-                    <td>options</td>
+                    <td>
+                        <button
+                        class="btn btn-small btn-outline-primary me-1"
+                        (click)="editTransaction(transaction)"
+                        >
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button
+                        class="btn btn-small btn-outline-danger me-1"
+                        (click)="deleteTransaction(transaction)"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>

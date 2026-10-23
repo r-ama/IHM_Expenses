@@ -25,10 +25,10 @@ export class TransactionService {
   }
 
   update(id: number, transaction: Transaction): Observable<Transaction>{
-    return this.http.post<Transaction>(this.apiUrl+"/Update/"+id, transaction);
+    return this.http.put<Transaction>(this.apiUrl+"/Update/"+id, transaction);
   }
 
   delete(id: number): Observable<void>{
-    return this.http.delete<void>(this.apiUrl+"/Delete"+id);
+    return this.http.delete<void>(this.apiUrl+"/Delete/"+id);
   }
 }
