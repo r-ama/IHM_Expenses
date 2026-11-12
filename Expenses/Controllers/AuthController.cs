@@ -15,17 +15,21 @@ namespace Expenses.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("AllowAll")]
-    public class AuthController(AppDbContext context) : ControllerBase
+    public class AuthController(AppDbContext context, PasswordHasher<User> passwordHasher) : ControllerBase
     {
         [HttpPost("Login")]
 
         public IActionResult Login([FromBody] LoginUserDto payload)
         {
-            var user = context.Users.FirstOrDefault(n => n.Email == payload.Email && n.Password ==
-            payload.Password);
+            var user = context.Users.FirstOrDefault(n => n.Email == payload.Email);
 
             if (user == null)
                 return Unauthorized("Invalid credentials");
+
+            var result = passwordHasher.VerifyHashedPassword(user, user.Password, payload.Password);
+            if(result == PasswordVerificationResult.Failed)
+                return Unauthorized("Invalid credentials");
+
 
             var token = GenerateJwtToken(user);
             return Ok(new { Token = token });
@@ -37,10 +41,12 @@ namespace Expenses.Controllers
             if (context.Users.Any(nameof => nameof.Email == payload.Email))
                 return BadRequest("This email address is already taken");
 
+            var hashedPassword = passwordHasher.HashPassword(null, payload.Password);
+
             var newUser = new User()
             {
                 Email = payload.Email,
-                Password = payload.Password, //hash it
+                Password = hashedPassword,
                 CreatedDate = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

@@ -1,7 +1,9 @@
 
 using Expenses.Data;
 using Expenses.Data.Services;
+using Expenses.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -15,6 +17,7 @@ namespace Expenses
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<PasswordHasher<User>>();
             var conn = builder.Configuration.GetConnectionString("Default");
             builder.Services.AddDbContext<AppDbContext>(OptionsBuilderConfigurationExtensions => OptionsBuilderConfigurationExtensions.UseSqlServer(conn));
             builder.Services.AddScoped<ITransactionService, TransactionsServices>();
@@ -45,7 +48,8 @@ namespace Expenses
 
                         ValidIssuer = "dotnethow.net",
                         ValidAudience = "dotnethow.net",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-very-secure-secret-key-32-chars-long"))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-very-secure-" +
+                        "secret-key-32-chars-long"))
                     };
                 });
 
